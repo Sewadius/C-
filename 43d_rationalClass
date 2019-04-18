@@ -15,20 +15,20 @@ public:
         CheckSimplication(); // Проверка сократимости дроби
     }
     void SignCheck(){ // Проверка знака для дроби
-		if (numerator_ < 0 && denominator_ < 0){
-			numerator_ = abs(numerator_); denominator_ = abs(denominator_);
-		} else if (numerator_ > 0 && denominator_ < 0){
-			numerator_ = -numerator_; denominator_ = -denominator_;
-		}
-		if (numerator_ == 0) denominator_ = 1; // Проверка числителя на ноль
+	if (numerator_ < 0 && denominator_ < 0){
+		numerator_ = abs(numerator_); denominator_ = abs(denominator_);
+	} else if (numerator_ > 0 && denominator_ < 0){
+		numerator_ = -numerator_; denominator_ = -denominator_;
+	}
+	if (numerator_ == 0) denominator_ = 1; // Проверка числителя на ноль
     }
     void CheckSimplication(){ // Проверка сократимости дроби
     	SignCheck(); // Проверка знака для дроби
     	int minimum = min(abs(numerator_), abs(denominator_));
     	for (int i = minimum; i > 1; --i) // Проверка сократимости дроби
-			if (numerator_ % i == 0 && denominator_ % i == 0){
-				numerator_ /= i; denominator_ /= i; break;
-			}
+		if (numerator_ % i == 0 && denominator_ % i == 0){
+			numerator_ /= i; denominator_ /= i; break;
+		}
     }
     void SetNumerator(int a){ // Установка числителя
     	numerator_ = a;
