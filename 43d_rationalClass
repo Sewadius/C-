@@ -1,0 +1,142 @@
+// Класс Rational - задание 43, часть 4
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <string>
+using namespace std;
+
+class Rational {
+public:
+    Rational(){ // Конструктор по умолчанию
+    	numerator_ = 0; denominator_ = 1;
+    }
+    Rational(int numerator, int denominator){ // Второй конструктор
+        numerator_ = numerator; denominator_ = denominator;
+        CheckSimplication(); // Проверка сократимости дроби
+    }
+    void SignCheck(){ // Проверка знака для дроби
+		if (numerator_ < 0 && denominator_ < 0){
+			numerator_ = abs(numerator_); denominator_ = abs(denominator_);
+		} else if (numerator_ > 0 && denominator_ < 0){
+			numerator_ = -numerator_; denominator_ = -denominator_;
+		}
+		if (numerator_ == 0) denominator_ = 1; // Проверка числителя на ноль
+    }
+    void CheckSimplication(){ // Проверка сократимости дроби
+    	SignCheck(); // Проверка знака для дроби
+    	int minimum = min(abs(numerator_), abs(denominator_));
+    	for (int i = minimum; i > 1; --i) // Проверка сократимости дроби
+			if (numerator_ % i == 0 && denominator_ % i == 0){
+				numerator_ /= i; denominator_ /= i; break;
+			}
+    }
+    void SetNumerator(int a){ // Установка числителя
+    	numerator_ = a;
+    	if (numerator_ != 0) CheckSimplication();
+    }
+    void SetDenominator(int a){ // Установка знаменателя
+    	denominator_ = a;
+    	if (numerator_ != 0) CheckSimplication();
+    }
+    int Numerator() const { // Возвращает числитель
+        return numerator_;
+    }
+    int Denominator() const { // Возвращает знаменатель
+        return denominator_;
+    }
+private:
+    int numerator_, denominator_; // Числитель и знаменатель
+};
+
+bool operator==(Rational r1, Rational r2){
+	if (r1.Numerator() == r2.Numerator())
+		if (r1.Denominator() == r2.Denominator()) return true;
+	return false;
+}
+
+Rational operator+(Rational r1, Rational r2){
+	int num, denom;
+	num = r1.Numerator() * r2.Denominator() + r2.Numerator() * r1.Denominator();
+	denom = r1.Denominator() * r2.Denominator();
+	return Rational(num, denom);
+}
+
+Rational operator-(Rational r1, Rational r2){
+	int num, denom;
+	num = r1.Numerator() * r2.Denominator() - r2.Numerator() * r1.Denominator();
+	denom = r1.Denominator() * r2.Denominator();
+	return Rational(num, denom);
+}
+
+Rational operator*(Rational r1, Rational r2){
+	int num, denom;
+	num = r1.Numerator() * r2.Numerator();
+	denom = r1.Denominator() * r2.Denominator();
+	return Rational(num, denom);
+}
+
+Rational operator/(Rational r1, Rational r2){
+	int num, denom;
+	num = r1.Numerator() * r2.Denominator();
+	denom = r1.Denominator() * r2.Numerator();
+	return Rational(num, denom);
+}
+
+// Оператор вывода в поток
+ostream& operator<<(ostream& stream, const Rational& r){
+	stream << r.Numerator();
+	stream << '/';
+	stream << r.Denominator();
+	return stream;
+}
+
+// Оператор ввода из потока
+istringstream& operator >>(istringstream& str, Rational& r){
+	if (!str.rdbuf()->in_avail()) return str;
+	int num, denom;
+	str >> num;
+	str.ignore(1);
+	str >> denom;
+	r = Rational(num, denom);
+	return str;
+}
+
+int main(){
+	{	// Test 1
+		ostringstream output;
+		output << Rational(-6, 8);
+		if (output.str() != "-3/4") {
+			cout << "Rational(-6, 8) should be written as \"-3/4\"" << endl;
+			return 1;
+		}
+	}
+	{	// Test 2
+		istringstream input("5/7");
+		Rational r;
+		input >> r;
+		bool equal = r == Rational(5, 7);
+		if (!equal) {
+			cout << "5/7 is incorrectly read as " << r << endl;
+			return 2;
+		}
+	}
+	{	// Test 3
+		istringstream input("5/7 10/8");
+		Rational r1, r2;
+		input >> r1 >> r2;
+		bool correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+		if (!correct) {
+			cout << "Multiple values are read incorrectly: " << r1 << " " << r2 << endl;
+			return 3;
+		}
+		input >> r1;
+		input >> r2;
+		correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+		if (!correct) {
+			cout << "Read from empty stream shouldn't change arguments: " << r1 << " " << r2 << endl;
+			return 4;
+		}
+	}
+	cout << "OK" << endl;
+	return 0;
+}
